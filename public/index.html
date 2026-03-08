@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McOKOTH TECHNOLOGIES | Innovative Tech Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-blue: #0a192f;
+            --brand-blue: #112240;
+            --accent-blue: #0077ff;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .bg-dark-blue { background-color: var(--dark-blue); }
+        .text-dark-blue { color: var(--dark-blue); }
+        .border-dark-blue { border-color: var(--dark-blue); }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #0a192f 0%, #112240 100%);
+        }
+
+        /* SPA Logic - Sections hidden by default */
+        .content-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.4s ease-out;
+        }
+        
+        .content-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .nav-link.active {
+            color: #3b82f6; /* text-blue-500 */
+            font-weight: 700;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+        .ceo-placeholder {
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #cbd5e1;
+        }
+
+        /* Mobile Menu Transitions */
+        #mobile-menu {
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .bot-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="showSection('home')">
+                    <span class="text-xl md:text-2xl font-bold text-dark-blue tracking-tighter">McOKOTH<span class="text-blue-600">TECHNOLOGIES</span></span>
+                </div>
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="showSection('home')" class="nav-link text-dark-blue hover:text-blue-600 font-medium transition active" data-section="home">Home</button>
+                    <button onclick="showSection('services')" class="nav-link text-dark-blue hover:text-blue-600 font-medium transition" data-section="services">Services</button>
+                    <button onclick="showSection('about')" class="nav-link text-dark-blue hover:text-blue-600 font-medium transition" data-section="about">About</button>
+                    <button onclick="showSection('contact')" class="nav-link text-dark-blue hover:text-blue-600 font-medium transition" data-section="contact">Contact</button>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="menu-toggle" class="text-dark-blue p-2 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Navigation Drawer -->
+            <div id="mobile-menu" class="md:hidden max-h-0 bg-white border-t border-gray-100">
+                <div class="flex flex-col space-y-4 py-4 px-2">
+                    <button onclick="showSection('home')" class="nav-link text-left text-dark-blue font-medium px-4 py-2" data-section="home">Home</button>
+                    <button onclick="showSection('services')" class="nav-link text-left text-dark-blue font-medium px-4 py-2" data-section="services">Services</button>
+                    <button onclick="showSection('about')" class="nav-link text-left text-dark-blue font-medium px-4 py-2" data-section="about">About</button>
+                    <button onclick="showSection('contact')" class="nav-link text-left text-dark-blue font-medium px-4 py-2" data-section="contact">Contact</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main>
+        <!-- Hero Section (Home) -->
+        <section id="home" class="content-section active">
+            <div class="hero-gradient text-white py-12 md:py-24">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-10 md:mb-0 text-center md:text-left">
+                        <div class="inline-block bg-blue-600/20 text-blue-400 px-4 py-1 rounded-full text-sm font-bold mb-4">
+                            NEW: AI Assistants & Electrical Repairs
+                        </div>
+                        <h1 class="text-3xl md:text-6xl font-extrabold leading-tight mb-6">
+                            Next-Gen Tech Solutions in <span class="text-blue-400">Murang'a Town</span>
+                        </h1>
+                        <p class="text-lg text-gray-300 mb-8 max-w-lg mx-auto md:mx-0">
+                            High-performance hosting, custom software development, and expert electronics repair near <strong>Rubis Fuel Station</strong>. Technicians available 24/7.
+                        </p>
+                        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start">
+                            <button onclick="showSection('services')" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition">Explore Services</button>
+                            <button onclick="showSection('contact')" class="border border-white hover:bg-white hover:text-dark-blue text-white px-8 py-3 rounded-lg font-semibold transition">Emergency Repair</button>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center hidden md:flex">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-sm border border-white/10 text-center">
+                                <i class="fas fa-server text-4xl text-blue-400 mb-2"></i>
+                                <p class="text-xs font-bold uppercase">24/7 Hosting</p>
+                            </div>
+                            <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-sm border border-white/10 text-center">
+                                <i class="fas fa-robot text-4xl text-blue-400 mb-2"></i>
+                                <p class="text-xs font-bold uppercase">AI Assistants</p>
+                            </div>
+                            <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-sm border border-white/10 text-center">
+                                <i class="fas fa-tools text-4xl text-blue-400 mb-2"></i>
+                                <p class="text-xs font-bold uppercase">Electronics Repair</p>
+                            </div>
+                            <div class="bg-white/10 p-6 rounded-2xl backdrop-blur-sm border border-white/10 text-center">
+                                <i class="fas fa-user-graduate text-4xl text-blue-400 mb-2"></i>
+                                <p class="text-xs font-bold uppercase">Intern Training</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Details Expansion -->
+            <div class="py-16 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Feature 1 -->
+                        <div class="flex items-start gap-4 p-6 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg"><i class="fas fa-cloud-upload-alt text-xl"></i></div>
+                            <div>
+                                <h4 class="font-bold text-dark-blue mb-1">Powerful Hosting</h4>
+                                <p class="text-sm text-gray-600 leading-relaxed">Websites hosted on powerful servers running 24/7 with 99.9% uptime and enterprise security.</p>
+                            </div>
+                        </div>
+                        <!-- Feature 2 -->
+                        <div class="flex items-start gap-4 p-6 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div class="bg-green-100 text-green-600 p-3 rounded-lg"><i class="fas fa-laptop-code text-xl"></i></div>
+                            <div>
+                                <h4 class="font-bold text-dark-blue mb-1">Custom Software</h4>
+                                <p class="text-sm text-gray-600 leading-relaxed">We build tailor-made software solutions specifically designed to meet your business needs.</p>
+                            </div>
+                        </div>
+                        <!-- Feature 3 -->
+                        <div class="flex items-start gap-4 p-6 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div class="bg-red-100 text-red-600 p-3 rounded-lg"><i class="fas fa-plug text-xl"></i></div>
+                            <div>
+                                <h4 class="font-bold text-dark-blue mb-1">Electronics Repair</h4>
+                                <p class="text-sm text-gray-600 leading-relaxed">Murang'a Town center (Near Rubis). Electrical and electronics repair available 24/7.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section (Integrated with Home) -->
+            <div class="py-12 bg-gray-50 border-y border-gray-100">
+                <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="text-3xl md:text-4xl font-bold text-dark-blue mb-2">2023</div>
+                        <div class="text-sm md:text-base text-gray-600 uppercase tracking-wide font-medium">Founded</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl md:text-4xl font-bold text-dark-blue mb-2">50+</div>
+                        <div class="text-sm md:text-base text-gray-600 uppercase tracking-wide font-medium">Staff Members</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl md:text-4xl font-bold text-dark-blue mb-2">24/7</div>
+                        <div class="text-sm md:text-base text-gray-600 uppercase tracking-wide font-medium">Tech Support</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl md:text-4xl font-bold text-dark-blue mb-2">Interns</div>
+                        <div class="text-sm md:text-base text-gray-600 uppercase tracking-wide font-medium">Training Hub</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="content-section py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-dark-blue mb-4">Our Comprehensive Services</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">From web infrastructure to physical repairs, we cover all your technology needs under one roof.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="service-card p-8 bg-white border border-gray-100 shadow-lg rounded-2xl">
+                        <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-brain text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-dark-blue">AI Assistants</h3>
+                        <p class="text-gray-600">Developing custom AI agents and chatbots to automate your customer service and business operations.</p>
+                    </div>
+
+                    <div class="service-card p-8 bg-white border border-gray-100 shadow-lg rounded-2xl">
+                        <div class="w-14 h-14 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-tools text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-dark-blue">Repair Center</h3>
+                        <p class="text-gray-600">Expert repair for laptops, phones, and industrial electrical equipment. Visit us near Rubis Fuel Station.</p>
+                    </div>
+
+                    <div onclick="window.location.href='intern'" class="service-card p-8 bg-white border border-gray-100 shadow-lg rounded-2xl cursor-pointer group">
+                        <div class="w-14 h-14 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-dark-blue">Intern Training</h3>
+                        <p class="text-gray-600 group-hover:text-blue-600 transition-colors">Empowering the next generation. We offer hands-on industrial training and internships for tech students. <span class="font-bold">Click to Apply &rarr;</span></p>
+                    </div>
+
+                    <div onclick="window.location.href='hosting'" class="service-card p-8 bg-white border border-gray-100 shadow-lg rounded-2xl cursor-pointer group">
+                        <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-globe text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-dark-blue">24/7 Web Hosting</h3>
+                        <p class="text-gray-600 group-hover:text-blue-600 transition-colors">Scalable cloud hosting solutions with daily backups and localized Murang'a server support. <span class="font-bold">View Plans &rarr;</span></p>
+                    </div>
+
+                    <div class="service-card p-8 bg-white border border-gray-100 shadow-lg rounded-2xl">
+                        <div class="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-code text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-dark-blue">Software Solutions</h3>
+                        <p class="text-gray-600">Custom ERPs, mobile apps, and inventory systems built exactly to your business specifications.</p>
+                    </div>
+
+                    <div class="service-card p-8 bg-white border border-gray-100 shadow-lg rounded-2xl">
+                        <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-network-wired text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-dark-blue">Networking</h3>
+                        <p class="text-gray-600">Professional LAN/WAN setup and specialized internet services for institutions and homes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section (Leadership) -->
+        <section id="about" class="content-section py-16 md:py-24 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="md:w-1/2 w-full">
+                        <div class="ceo-placeholder w-full aspect-square rounded-3xl overflow-hidden shadow-2xl relative">
+                            <div class="text-center p-6">
+                                <image src="https://res.cloudinary.com/dxzmo0roe/image/upload/v1772279063/CEO_fbpy8e.jpg" alt="Founder Portrait" class="w-full h-full object-cover">
+                                <p class="text-gray-500 font-bold text-lg">BYRON OKOTH</p>
+                                <p class="text-gray-400 italic">CEO and Founder</p>
+                                <div class="mt-4 p-2 border border-dashed border-gray-400 rounded-lg text-xs">
+                                    Click to upload Founder portrait
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2">
+                        <h2 class="text-3xl md:text-4xl font-bold text-dark-blue mb-6">Our Leadership</h2>
+                        <h3 class="text-2xl font-semibold text-blue-600 mb-2">BYRON OKOTH</h3>
+                        <p class="text-gray-500 italic mb-6">CEO and Founder</p>
+                        <p class="text-gray-700 leading-relaxed mb-6">
+                            Established in 2023, McOKOTH TECHNOLOGIES was born out of a vision to bridge the technological gap in Murang'a and beyond. 
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mb-6">
+                            Under the leadership of our dedicated CEO, we have grown to a team of <strong>over 100 dedicated staffs</strong>, including highly qualified engineers and professional sales people.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed">
+                            Located in Murang'a Town (Branch near Rubis Fuel Station), we are committed to fostering local talent and delivering global tech standards.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="content-section py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Info Column -->
+                    <div>
+                        <h2 class="text-3xl font-bold text-dark-blue mb-8">24/7 Support Center</h2>
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="text-blue-600 mt-1"><i class="fas fa-map-marker-alt text-xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Main Hub</h4>
+                                    <p class="text-gray-600">Murang'a Town<br>Kenya.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="text-blue-600 mt-1"><i class="fas fa-tools text-xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Repair Branch</h4>
+                                    <p class="text-gray-600">Near Rubis Fuel Station, Murang'a Town.<br>Technicians available 24/7.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="text-blue-600 mt-1"><i class="fas fa-phone-alt text-xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Call Us</h4>
+                                    <p class="text-gray-600"><i class="fas fa-phone mr-2"></i>0742041208</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="text-blue-600 mt-1"><i class="fas fa-envelope text-xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Email Us</h4>
+                                    <p class="text-gray-600"><i class="fas fa-envelope mr-2"></i>oyoookoth42@gmail.com</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Icons -->
+                        <div class="mt-12">
+                            <h4 class="font-bold text-lg mb-6">Connect With Us</h4>
+                            <div class="flex flex-wrap gap-4">
+                                <a href="#" class="w-12 h-12 rounded-full bg-dark-blue text-white flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-linkedin-in text-lg"></i></a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-dark-blue text-white flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-facebook-f text-lg"></i></a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-dark-blue text-white flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-twitter text-lg"></i></a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-dark-blue text-white flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-instagram text-lg"></i></a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-dark-blue text-white flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-discord text-lg"></i></a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-dark-blue text-white flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-github text-lg"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Column -->
+                    <div class="bg-gray-50 p-8 rounded-3xl shadow-lg border border-gray-100">
+                        <h3 class="text-2xl font-bold mb-6 text-dark-blue">Request Service</h3>
+                        <form onsubmit="submitContactForm(event)">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                                <input id="contact-name" type="text" placeholder="Your Name" class="p-3 rounded-xl border-gray-300 focus:ring-blue-500 w-full" required>
+                                <input id="contact-email" type="email" placeholder="Your Email" class="p-3 rounded-xl border-gray-300 focus:ring-blue-500 w-full" required>
+                            </div>
+                            <select id="contact-service" class="p-3 rounded-xl border-gray-300 focus:ring-blue-500 w-full mb-4">
+                                <option>General Inquiry</option>
+                                <option>Urgent Electronics Repair</option>
+                                <option>Custom Software Need</option>
+                                <option>Web Hosting & AI Assistants</option>
+                                <option>Internship/Training Inquiry</option>
+                            </select>
+                            <textarea id="contact-message" placeholder="Describe your technical needs..." rows="5" class="p-3 rounded-xl border-gray-300 focus:ring-blue-500 w-full mb-4" required></textarea>
+                            <button type="submit" class="w-full bg-dark-blue text-white font-bold py-4 rounded-xl hover:bg-blue-900 transition-all shadow-md">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Internship Application Section -->
+        <section id="internship" class="content-section py-16 md:py-24 bg-gray-50">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <button onclick="showSection('services')" class="mb-6 text-blue-600 hover:text-blue-800 font-medium"><i class="fas fa-arrow-left mr-2"></i>Back to Services</button>
+                    <h2 class="text-3xl md:text-4xl font-bold text-dark-blue mb-4">Internship Application</h2>
+                    <p class="text-gray-600">Join our team and gain hands-on experience in the tech industry. Fill out the form below to apply.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                    <form onsubmit="submitInternForm(event)">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2" for="intern-name">Full Name</label>
+                                <input id="intern-name" type="text" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="John Doe" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2" for="intern-email">Email Address</label>
+                                <input id="intern-email" type="email" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="john@example.com" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2" for="intern-phone">Phone Number</label>
+                                <input id="intern-phone" type="tel" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="07..." required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2" for="intern-expertise">Area of Expertise</label>
+                                <select id="intern-expertise" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                                    <option value="">Select an option</option>
+                                    <option value="Software Development">Software Development</option>
+                                    <option value="Web Hosting & Networking">Web Hosting & Networking</option>
+                                    <option value="Electronics Repair">Electronics Repair</option>
+                                    <option value="AI & Machine Learning">AI & Machine Learning</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-12 rounded-xl hover:bg-blue-700 transition-all shadow-md">Submit Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Original Footer Restored -->
+    <footer class="bg-dark-blue text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <span class="text-2xl font-bold tracking-tighter mb-6 block">McOKOTH<span class="text-blue-400">TECHNOLOGIES</span></span>
+                    <p class="text-gray-400">Leading the way in technological innovation since 2023. Located near Murang'a University and Rubis Fuel Station.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-6">Quick Links</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li><button onclick="showSection('home')" class="hover:text-white transition">Home</button></li>
+                        <li><button onclick="showSection('services')" class="hover:text-white transition">Services</button></li>
+                        <li><button onclick="showSection('about')" class="hover:text-white transition">About Founder</button></li>
+                        <li><button onclick="showSection('contact')" class="hover:text-white transition">Support</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-6">Specialties</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li>AI & Software Dev</li>
+                        <li>24/7 Server Hosting</li>
+                        <li>Electronics Repair</li>
+                        <li>Intern Training</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-6">Stay Connected</h4>
+                    <p class="text-gray-400 mb-4">Subscribe for tech updates.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Email" class="p-3 rounded-l-lg bg-gray-800 border-none text-white w-full focus:ring-2 focus:ring-blue-500">
+                        <button class="bg-blue-600 px-4 rounded-r-lg hover:bg-blue-700">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2026 McOKOTH TECHNOLOGIES. All Rights Reserved.</p>
+                <p class="mt-2">Murang'a Town, near Rubis Fuel Station, Kenya.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Bot Icon (Global) -->
+    <div class="fixed bottom-8 right-8 z-50">
+        <button onclick="toggleChat()" class="bot-float bg-blue-600 hover:bg-blue-700 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center transition duration-300 hover:scale-110 group border-4 border-white/20">
+            <i class="fas fa-robot text-2xl"></i>
+            <span class="absolute right-full mr-4 bg-white text-dark-blue px-3 py-1 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-sm font-bold whitespace-nowrap pointer-events-none">
+                Chat with AI
+            </span>
+        </button>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chat-modal" class="fixed bottom-28 right-8 z-50 w-80 bg-white rounded-2xl shadow-2xl transform scale-0 origin-bottom-right transition-all duration-300 border border-gray-200 hidden">
+        <!-- Header -->
+        <div class="bg-dark-blue text-white p-4 rounded-t-2xl flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <i class="fas fa-robot text-sm"></i>
+                </div>
+                <span class="font-bold">AI Assistant</span>
+            </div>
+            <button onclick="toggleChat()" class="text-gray-300 hover:text-white focus:outline-none"><i class="fas fa-times"></i></button>
+        </div>
+        <!-- Messages -->
+        <div id="chat-messages" class="h-80 overflow-y-auto p-4 bg-gray-50 flex flex-col gap-3">
+            <div class="self-start bg-white border border-gray-200 rounded-lg p-3 max-w-[85%] shadow-sm">
+                <p class="text-sm text-gray-700">Hello! I'm your AI assistant. Ask me about our services, company, or location!</p>
+            </div>
+        </div>
+        <!-- Input -->
+        <div class="p-3 border-t border-gray-100 bg-white rounded-b-2xl">
+            <form onsubmit="handleChat(event)" class="flex gap-2">
+                <input id="chat-input" type="text" placeholder="Type a message..." class="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500" autocomplete="off">
+                <button type="submit" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        // SPA Section Toggling
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Deactivate all nav links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show current section
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Highlighting active link
+            const linksToActivate = document.querySelectorAll(`.nav-link[data-section="${sectionId}"]`);
+            linksToActivate.forEach(l => l.classList.add('active'));
+
+            // Close mobile menu if open
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.style.maxHeight = '0px';
+        }
+
+        // Mobile Menu Toggle
+        const toggleBtn = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        toggleBtn.addEventListener('click', () => {
+            if (mobileMenu.style.maxHeight === '0px' || mobileMenu.style.maxHeight === '') {
+                mobileMenu.style.maxHeight = '300px';
+            } else {
+                mobileMenu.style.maxHeight = '0px';
+            }
+        });
+
+        // Toast Notification Logic
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgClass = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            // Create toast element
+            toast.className = `${bgClass} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] pointer-events-auto`;
+            toast.innerHTML = `
+                <i class="fas ${icon} text-2xl"></i>
+                <div>
+                    <h4 class="font-bold text-lg">${type === 'success' ? 'Success' : 'Error'}</h4>
+                    <p class="text-sm opacity-90">${message}</p>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Animate In
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+
+            // Auto Dismiss
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+
+        // Chat Bot Logic
+        function toggleChat() {
+            const modal = document.getElementById('chat-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before scaling
+                setTimeout(() => modal.classList.remove('scale-0'), 10);
+            } else {
+                modal.classList.add('scale-0');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+
+        function handleChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add User Message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Simulate thinking
+            const typingIndicator = addTypingIndicator();
+            
+            setTimeout(() => {
+                removeTypingIndicator(typingIndicator);
+                const response = getBotResponse(message);
+                addMessage(response, 'bot');
+            }, 800);
+        }
+
+        function addMessage(text, sender) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            const isBot = sender === 'bot';
+            
+            div.className = isBot 
+                ? 'self-start bg-white border border-gray-200 rounded-lg p-3 max-w-[85%] shadow-sm' 
+                : 'self-end bg-blue-600 text-white rounded-lg p-3 max-w-[85%] shadow-sm';
+                
+            div.innerHTML = `<p class="text-sm ${isBot ? 'text-gray-700' : 'text-white'}">${text}</p>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'self-start bg-white border border-gray-200 rounded-lg p-3 max-w-[85%] shadow-sm typing-indicator';
+            div.innerHTML = '<div class="flex gap-1">' +
+                '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>' +
+                '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>' +
+                '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>' +
+                '</div>';
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        function removeTypingIndicator(element) {
+            if(element) element.remove();
+        }
+
+        function getBotResponse(input) {
+            const lowerInput = input.toLowerCase();
+            
+            if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')) {
+                return "Hello! Welcome to McOKOTH TECHNOLOGIES. How can I help you today?";
+            }
+            if (lowerInput.includes('about') || lowerInput.includes('company') || lowerInput.includes('who are you')) {
+                return "We are McOKOTH TECHNOLOGIES, a leading tech solution provider in Murang'a Town, offering hosting, software development, and electronics repair.";
+            }
+            if (lowerInput.includes('service') || lowerInput.includes('offer') || lowerInput.includes('do')) {
+                return "We offer AI Assistants, Electronics Repair, Intern Training, Web Hosting, Software Solutions, and Networking.";
+            }
+            if (lowerInput.includes('location') || lowerInput.includes('where')) {
+                return "We are located in Murang'a Town, near Rubis Fuel Station.";
+            }
+            if (lowerInput.includes('contact') || lowerInput.includes('phone') || lowerInput.includes('email')) {
+                return "You can reach us at 0742041208 or email oyoookoth42@gmail.com.";
+            }
+            
+            return "I'm not sure about that. Would you like to request help from a human support agent? They will contact you via email. <br><br><button onclick=\"requestHumanSupport('${input}')\" class='bg-blue-500 text-white px-3 py-1 rounded-lg text-sm'>Yes, request support</button>";
+        }
+
+        async function requestHumanSupport(message) {
+            const email = prompt("Please enter your email address so our team can contact you:");
+            if (!email) {
+                addMessage("Support request cancelled.", 'bot');
+                return;
+            }
+            addMessage("Submitting your request...", 'bot');
+            const res = await fetch('/api/request-support', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, message }) });
+            const data = await res.json();
+            addMessage(data.message, 'bot');
+        }
+
+        // API Communication
+        async function submitContactForm(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerText;
+            
+            // UI Feedback: Loading
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                service: document.getElementById('contact-service').value,
+                message: document.getElementById('contact-message').value
+            };
+
+            try {
+                // Sending data to the backend server
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    form.reset();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to connect to the server.', 'error');
+            } finally {
+                // Restore button
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        }
+  
+
+        function handleChat(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add User Message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Simulate thinking
+            const typingIndicator = addTypingIndicator();
+            
+            setTimeout(() => {
+                removeTypingIndicator(typingIndicator);
+                const response = getBotResponse(message);
+                addMessage(response, 'bot');
+            }, 800);
+        }
+
+        function addMessage(text, sender) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            const isBot = sender === 'bot';
+            
+            div.className = isBot 
+                ? 'self-start bg-white border border-gray-200 rounded-lg p-3 max-w-[85%] shadow-sm' 
+                : 'self-end bg-blue-600 text-white rounded-lg p-3 max-w-[85%] shadow-sm';
+                
+            div.innerHTML = `<p class="text-sm ${isBot ? 'text-gray-700' : 'text-white'}">${text}</p>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'self-start bg-white border border-gray-200 rounded-lg p-3 max-w-[85%] shadow-sm typing-indicator';
+            div.innerHTML = '<div class="flex gap-1"><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div></div>';
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        function removeTypingIndicator(element) {
+            if(element) element.remove();
+        }
+
+        function getBotResponse(input) {
+            const lowerInput = input.toLowerCase();
+            
+            if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')|| lowerInput.includes('yo') || lowerInput.includes('greetings')|| lowerInput.includes('welcome')) {
+                return "Hello! Welcome to McOKOTH TECHNOLOGIES. How can I help you today?";
+            }
+            if (lowerInput.includes('about') || lowerInput.includes('company') || lowerInput.includes('who are you')) {
+                return "We are McOKOTH TECHNOLOGIES, a leading tech solution provider in Murang'a Town, offering hosting, software development, and electronics repair.";
+            }
+            if (lowerInput.includes('service') || lowerInput.includes('offer') || lowerInput.includes('do')) {
+                return "We offer AI Assistants, Electronics Repair, Intern Training, Web Hosting, Software Solutions, and Networking.";
+            }
+            if (lowerInput.includes('location') || lowerInput.includes('where') || lowerInput.includes('address')) {
+                return "We are located in Murang'a Town, near Rubis Fuel Station.";
+            }
+            if (lowerInput.includes('contact') || lowerInput.includes('phone') || lowerInput.includes('email')) {
+                return "You can reach us at 0742041208 or email oyoookoth42@gmail.com.";
+            }
+            if (lowerInput.includes('repair') || lowerInput.includes('electronics')) {
+                return "Our repair center is located near Rubis Fuel Station in Murang'a Town. We offer 24/7 technician support for laptops, phones, and industrial electrical equipment.";
+            }
+            if (lowerInput.includes('intern') || lowerInput.includes('training')) {
+                return "We provide hands-on industrial training and internships for tech students. Contact us to learn more about our programs.";
+            }
+            if (lowerInput.includes('software')) {
+                return "Our software solutions include custom ERPs, mobile apps, and inventory systems tailored to your business needs.";
+            }
+            if (lowerInput.includes('hosting')) {
+                return "We offer scalable cloud hosting solutions with daily backups and localized Murang'a server support.";
+            }   
+            if (lowerInput.includes('ai') || lowerInput.includes('assistant')) {
+                return "Our AI Assistants are custom-built to automate your customer service and business operations. Contact us for a consultation!";
+            }   
+            if (lowerInput.includes('networking')) {
+                return "We provide professional LAN/WAN setup and specialized internet services for institutions and homes. Contact us for more details.";
+            }   
+            return "I'm not sure about that. Please contact our support team at 0742041208 or try asking about our services.";
+        }
+
+        // API Communication
+        async function submitContactForm(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerText;
+            
+            // UI Feedback: Loading
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: document.getElementById('contact-name').value,
+                email: document.getElementById('contact-email').value,
+                service: document.getElementById('contact-service').value,
+                message: document.getElementById('contact-message').value
+            };
+
+            try {
+                // Sending data to the backend server
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    form.reset();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to connect to the server.', 'error');
+            } finally {
+                // Restore button
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function submitInternForm(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerText;
+            
+            // UI Feedback: Loading
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: document.getElementById('intern-name').value,
+                email: document.getElementById('intern-email').value,
+                phone: document.getElementById('intern-phone').value,
+                expertise: document.getElementById('intern-expertise').value
+            };
+
+            try {
+                // Sending data to the backend server
+                const response = await fetch('/api/internship', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast(result.message || 'Application submitted! Check your email.', 'success');
+                    form.reset();
+                } else {
+                    showToast(result.message || 'Submission failed.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to connect to the server.', 'error');
+            } finally {
+                // Restore button
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

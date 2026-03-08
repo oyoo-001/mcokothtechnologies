@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Program | McOKOTH TECHNOLOGIES</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-blue: #0a192f;
+            --brand-blue: #112240;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .bg-dark-blue { background-color: var(--dark-blue); }
+        .text-dark-blue { color: var(--dark-blue); }
+        .hero-bg { background: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 0.9)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-position: center; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.location.href='/'">
+                    <span class="text-xl md:text-2xl font-bold text-dark-blue tracking-tighter">McOKOTH<span class="text-blue-600">TECHNOLOGIES</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-dark-blue hover:text-blue-600 font-medium transition">Home</a>
+                    <a href="hosting" class="text-dark-blue hover:text-blue-600 font-medium transition">Hosting</a>
+                    <a href="/#services" class="text-dark-blue hover:text-blue-600 font-medium transition">Services</a>
+                    <a href="/#contact" class="text-dark-blue hover:text-blue-600 font-medium transition">Contact</a>
+                    <button id="nav-login-btn" onclick="toggleLoginModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Student Login</button>
+                    <div id="intern-nav-actions" class="hidden items-center gap-6">
+                        <div class="relative">
+                            <button onclick="toggleInternNotifications()" class="text-gray-600 hover:text-blue-600 focus:outline-none relative">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span id="intern-notification-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                            </button>
+                            <div id="intern-notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 hidden z-50 overflow-hidden">
+                                <div id="intern-notification-list" class="max-h-64 overflow-y-auto"></div>
+                            </div>
+                        </div>
+                        <button onclick="logout()" class="text-red-500 hover:underline font-medium text-sm">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-24 text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Jumpstart Your Tech Career</h1>
+            <p class="text-xl text-gray-300 mb-8">Join our intensive industrial attachment and internship program. Gain real-world experience in Software Development, Networking, and Electronics Repair.</p>
+            <a href="#apply" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition">Apply Now</a>
+        </div>
+    </section>
+
+    <!-- Student Portal (Hidden by default) -->
+    <section id="student-portal" class="py-16 bg-gray-50 hidden">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-dark-blue">Welcome, <span id="intern-name-display"></span>!</h2>
+            </div>
+            
+            <!-- Courses -->
+            <h3 class="text-2xl font-semibold text-dark-blue mb-6">My Courses</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="courses-container">
+                <!-- Courses will be injected here -->
+            </div>
+
+            <!-- Exams -->
+            <div class="mt-16">
+                <h3 class="text-2xl font-semibold text-dark-blue mb-6">Exams & Assessments</h3>
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <ul id="exams-list" class="space-y-4">
+                        <!-- Exams will be injected here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Program Details -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-dark-blue mb-6">Why Join Us?</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-blue-600 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-bold">Hands-on Experience</h4>
+                                <p class="text-gray-600">Work on live client projects under the mentorship of senior engineers.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-blue-600 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-bold">Certification</h4>
+                                <p class="text-gray-600">Receive a recognized certificate of completion and recommendation letter.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-blue-600 mt-1 mr-3"></i>
+                            <div>
+                                <h4 class="font-bold">Skill Development</h4>
+                                <p class="text-gray-600">Master modern tools: React, Node.js, Python, Networking hardware, and Circuit diagnostics.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-gray-100 p-8 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4">Available Tracks</h3>
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-600">
+                            <h4 class="font-bold">Software Development</h4>
+                            <p class="text-sm text-gray-500">Web & Mobile Apps, AI Integration</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-green-600">
+                            <h4 class="font-bold">Hardware & Networking</h4>
+                            <p class="text-sm text-gray-500">CCTV, LAN/WAN, Server Maintenance</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-red-600">
+                            <h4 class="font-bold">Electronics Repair</h4>
+                            <p class="text-sm text-gray-500">Laptops, Phones, Industrial Boards</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Form -->
+    <section id="apply" class="py-16 bg-gray-50">
+        <div class="max-w-3xl mx-auto px-4">
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                <h2 class="text-3xl font-bold text-center text-dark-blue mb-8">Submit Your Application</h2>
+                <form onsubmit="submitInternForm(event)">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2" for="intern-name">Full Name</label>
+                            <input id="intern-name" type="text" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="John Doe" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2" for="intern-email">Email Address</label>
+                            <input id="intern-email" type="email" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="john@example.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2" for="intern-phone">Phone Number</label>
+                            <input id="intern-phone" type="tel" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="07..." required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2" for="intern-expertise">Preferred Track</label>
+                            <select id="intern-expertise" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                                <option value="">Select an option</option>
+                                <option value="Software Development">Software Development</option>
+                                <option value="Web Hosting & Networking">Web Hosting & Networking</option>
+                                <option value="Electronics Repair">Electronics Repair</option>
+                                <option value="AI & Machine Learning">AI & Machine Learning</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-12 rounded-xl hover:bg-blue-700 transition-all shadow-md">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discussion Modal -->
+    <div id="discussion-modal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-2xl relative flex flex-col h-[90vh]">
+            <button onclick="closeDiscussionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none"><i class="fas fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-bold text-dark-blue mb-4 pr-8" id="discussion-title">Course Discussion</h2>
+            <!-- Comments -->
+            <div id="comments-container" class="flex-grow overflow-y-auto bg-gray-50 p-4 rounded-lg mb-4 space-y-4">
+                <!-- Comments will be injected here -->
+            </div>
+            <!-- Input -->
+            <form onsubmit="postComment(event)">
+                <input type="hidden" id="discussion-course-id">
+                <textarea id="comment-input" placeholder="Write a comment..." class="w-full p-3 border rounded-lg mb-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" rows="3" required></textarea>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition">Post Comment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            
+            <!-- Login View -->
+            <div id="login-view">
+                <h2 class="text-2xl font-bold text-dark-blue mb-6 text-center">Student Login</h2>
+                <form onsubmit="handleLogin(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="login-email" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                        <input type="password" id="login-password" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                        <div class="text-right mt-2">
+                            <button type="button" onclick="toggleForgotView()" class="text-sm text-blue-600 hover:underline">Forgot Password?</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Login</button>
+                </form>
+                <p class="mt-4 text-center text-sm text-gray-500">Credentials are sent via email upon application approval.</p>
+            </div>
+
+            <!-- Forgot Password View -->
+            <div id="forgot-view" class="hidden">
+                <h2 class="text-2xl font-bold text-dark-blue mb-4 text-center">Reset Password</h2>
+                <p class="text-gray-600 text-sm mb-6 text-center">Enter your email address and we'll send you a link to reset your password.</p>
+                <form onsubmit="handleForgotPassword(event)">
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                        <input type="email" id="forgot-email" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Send Reset Link</button>
+                </form>
+                <div class="mt-4 text-center">
+                    <button onclick="toggleForgotView()" class="text-sm text-gray-500 hover:text-gray-700">Back to Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+            <button onclick="closeVideoModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-20 bg-black/50 rounded-full p-2 w-10 h-10 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            <iframe id="video-frame" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Exam Runner Modal -->
+    <div id="exam-modal" class="fixed inset-0 bg-white z-50 hidden flex flex-col">
+        <div class="bg-dark-blue text-white p-4 flex justify-between items-center shadow-md">
+            <h2 id="exam-runner-title" class="text-xl font-bold truncate pr-4">Exam</h2>
+            <div class="flex items-center gap-4 flex-shrink-0">
+                <div class="text-xl font-mono bg-blue-700 px-4 py-1 rounded border border-blue-500 shadow-inner" id="exam-timer">00:00</div>
+                <button onclick="submitExam()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold transition shadow-lg">Submit Exam</button>
+            </div>
+        </div>
+        <div class="flex-grow relative bg-gray-100">
+            <iframe id="exam-frame" class="w-full h-full" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        // Check session on load
+        document.addEventListener('DOMContentLoaded', checkSession);
+
+        // Toast Notification Logic
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+            toast.className = `${bgClass} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] pointer-events-auto`;
+            toast.innerHTML = `<div><h4 class="font-bold text-lg">${type === 'success' ? 'Success' : 'Error'}</h4><p class="text-sm opacity-90">${message}</p></div>`;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+            setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 500); }, 5000);
+        }
+
+        async function submitInternForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerText;
+            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+            submitBtn.disabled = true;
+
+            const formData = {
+                name: document.getElementById('intern-name').value,
+                email: document.getElementById('intern-email').value,
+                phone: document.getElementById('intern-phone').value,
+                expertise: document.getElementById('intern-expertise').value
+            };
+
+            try {
+                const response = await fetch('/api/internship', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+                const result = await response.json();
+                showToast(result.success ? (result.message || 'Application submitted!') : (result.message || 'Submission failed.'), result.success ? 'success' : 'error');
+                if (result.success) form.reset();
+            } catch (error) { showToast('Failed to connect to the server.', 'error'); } 
+            finally { submitBtn.innerText = originalBtnText; submitBtn.disabled = false; }
+        }
+
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function toggleForgotView() {
+            document.getElementById('login-view').classList.toggle('hidden');
+            document.getElementById('forgot-view').classList.toggle('hidden');
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/forgot-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+            } catch (err) { showToast('Failed to send request', 'error'); }
+            finally { btn.innerText = originalText; btn.disabled = false; }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('Login successful!', 'success');
+                    toggleLoginModal();
+                    checkSession();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch (err) {
+                showToast('Login failed', 'error');
+            }
+        }
+
+        async function checkSession() {
+            const res = await fetch('/api/check-session');
+            const data = await res.json();
+            const portal = document.getElementById('student-portal');
+            const applySection = document.getElementById('apply');
+            const navBtn = document.getElementById('nav-login-btn');
+            const internNav = document.getElementById('intern-nav-actions');
+
+            if (data.loggedIn && (data.user.role === 'intern' || data.user.role === 'admin')) {
+                portal.classList.remove('hidden');
+                applySection.classList.add('hidden');
+                navBtn.classList.add('hidden');
+                internNav.classList.remove('hidden');
+                internNav.classList.add('flex');
+                document.getElementById('intern-name-display').innerText = data.user.name.split(' ')[0];
+                refreshPortalData();
+                setInterval(refreshPortalData, 60000); // Refresh every minute
+            } else {
+                portal.classList.add('hidden');
+                applySection.classList.remove('hidden');
+                navBtn.innerText = 'Student Login';
+                navBtn.onclick = toggleLoginModal;
+            }
+        }
+
+        function refreshPortalData() {
+            loadCourses();
+            loadExams();
+            loadInternNotifications();
+        }
+
+        async function loadCourses() {
+            const res = await fetch('/api/courses');
+            const data = await res.json();
+            const container = document.getElementById('courses-container');
+            
+            if (data.success) {
+                container.innerHTML = data.courses.map(c => `
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                        <div class="h-40 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-gray-400">
+                            <i class="fas fa-play-circle text-4xl"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">${c.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${c.desc}</p>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Progress</span>
+                                <span id="prog-text-${c.id}">${c.progress}%</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="${c.progress}" onchange="updateProgress(${c.id}, this.value)" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openVideo('${c.videoUrl}')" class="flex-1 text-center border border-blue-600 text-blue-600 py-2 rounded-lg hover:bg-blue-50 transition">Watch Video</button>
+                            <button onclick="openDiscussion(${c.id}, '${c.title}')" class="flex-1 text-center border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-100 transition">Discussion</button>
+                            ${c.progress === 100 ? `
+                                <a href="/api/certificate/${c.id}" target="_blank" class="flex-1 text-center bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition" title="Download Certificate">
+                                    <i class="fas fa-certificate"></i>
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function updateProgress(courseId, value) {
+            document.getElementById(`prog-text-${courseId}`).innerText = `${value}%`;
+            try {
+                await fetch(`/api/courses/${courseId}/progress`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ progress: value })
+                });
+                if (value == 100) loadCourses(); // Refresh to show certificate button
+            } catch (e) {
+                console.error(e);
+                showToast('Failed to save progress', 'error');
+            }
+        }
+
+        async function loadExams() {
+            const res = await fetch('/api/exams');
+            const data = await res.json();
+            const list = document.getElementById('exams-list');
+            if (data.success && data.exams.length > 0) {
+                list.innerHTML = data.exams.map(e => `
+                    <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-file-alt ${e.isCompleted ? 'text-green-600' : 'text-blue-600'}"></i>
+                            <span class="font-medium ${e.isCompleted ? 'text-gray-500 line-through' : 'text-gray-700'}">${e.title}</span>
+                        </div>
+                        ${e.isCompleted 
+                            ? `<span class="text-green-600 text-sm font-bold px-4 py-1.5"><i class="fas fa-check mr-1"></i>Completed</span>`
+                            : `<button onclick="confirmStartExam(${e.id}, '${e.title}', '${e.link}', ${e.duration})" class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-700">Start Exam</button>`
+                        }
+                    </li>
+                `).join('');
+            } else {
+                list.innerHTML = `<li class="text-center text-gray-500">No exams posted yet.</li>`;
+            }
+        }
+
+        // Video Modal Logic
+        function openVideo(url) {
+            // Convert YouTube watch links to embed links if necessary
+            let embedUrl = url;
+            if (url.includes('youtube.com/watch?v=')) {
+                const videoId = url.split('v=')[1].split('&')[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            } else if (url.includes('youtu.be/')) {
+                const videoId = url.split('youtu.be/')[1];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            }
+            
+            document.getElementById('video-frame').src = embedUrl;
+            document.getElementById('video-modal').classList.remove('hidden');
+        }
+
+        function closeVideoModal() {
+            document.getElementById('video-modal').classList.add('hidden');
+            document.getElementById('video-frame').src = '';
+        }
+
+        // Exam Logic
+        let examTimerInterval;
+        let currentExamId = null;
+
+        function confirmStartExam(id, title, link, duration) {
+            const msg = duration && duration > 0 
+                ? `You are about to start "${title}".\nYou have ${duration} minutes to complete it.\nThe system will auto-submit when time is up.\n\nStart now?`
+                : `You are about to start "${title}".\n\nStart now?`;
+            
+            if (confirm(msg)) {
+                startExam(id, title, link, duration);
+            }
+        }
+
+        function startExam(id, title, link, duration) {
+            currentExamId = id;
+            const modal = document.getElementById('exam-modal');
+            const frame = document.getElementById('exam-frame');
+            const timerDisplay = document.getElementById('exam-timer');
+            const titleDisplay = document.getElementById('exam-runner-title');
+
+            titleDisplay.innerText = title;
+            frame.src = link;
+            modal.classList.remove('hidden');
+
+            if (duration && duration > 0) {
+                let timeLeft = duration * 60; // seconds
+                updateTimerDisplay(timeLeft);
+                
+                examTimerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay(timeLeft);
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(examTimerInterval);
+                        alert("Time is up! The exam will be submitted.");
+                        submitExam();
+                    }
+                }, 1000);
+            } else {
+                timerDisplay.innerText = "No Limit";
+            }
+        }
+
+        function updateTimerDisplay(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            document.getElementById('exam-timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            
+            // Visual warning
+            if (seconds < 60) {
+                document.getElementById('exam-timer').classList.add('bg-red-600');
+                document.getElementById('exam-timer').classList.remove('bg-blue-700');
+            } else {
+                document.getElementById('exam-timer').classList.remove('bg-red-600');
+                document.getElementById('exam-timer').classList.add('bg-blue-700');
+            }
+        }
+
+        async function submitExam() {
+            clearInterval(examTimerInterval);
+            document.getElementById('exam-modal').classList.add('hidden');
+            document.getElementById('exam-frame').src = '';
+            
+            if (currentExamId) {
+                try {
+                    await fetch(`/api/exams/${currentExamId}/complete`, { method: 'POST' });
+                    loadExams(); // Refresh list to show completion
+                } catch(e) { console.error(e); }
+                currentExamId = null;
+            }
+            
+            showToast('Exam submitted successfully.', 'success');
+        }
+
+        async function loadInternNotifications() {
+            try {
+                const res = await fetch('/api/intern/notifications');
+                const data = await res.json();
+                if (data.success) {
+                    const badge = document.getElementById('intern-notification-badge');
+                    const list = document.getElementById('intern-notification-list');
+                    
+                    if (data.unreadCount > 0) {
+                        badge.innerText = data.unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+
+                    list.innerHTML = data.notifications.length ? data.notifications.map(n => `
+                        <div class="p-3 border-b border-gray-50 hover:bg-gray-50">
+                            <p class="text-sm text-gray-800">${n.message}</p>
+                            <p class="text-xs text-gray-500 mt-1">${new Date(n.created_at).toLocaleString()}</p>
+                        </div>
+                    `).join('') : '<div class="p-4 text-center text-gray-500 text-sm">No new notifications</div>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function toggleInternNotifications() {
+            document.getElementById('intern-notification-dropdown').classList.toggle('hidden');
+            // When opening, mark as read
+            fetch('/api/intern/notifications/mark-read', { method: 'POST' }).then(() => loadInternNotifications());
+        }
+
+        // Discussion Modal Logic
+        function closeDiscussionModal() {
+            document.getElementById('discussion-modal').classList.add('hidden');
+        }
+
+        async function openDiscussion(courseId, courseTitle) {
+            const modal = document.getElementById('discussion-modal');
+            document.getElementById('discussion-title').innerText = courseTitle;
+            document.getElementById('discussion-course-id').value = courseId;
+            modal.classList.remove('hidden');
+            await loadComments(courseId);
+        }
+
+        async function loadComments(courseId) {
+            const container = document.getElementById('comments-container');
+            container.innerHTML = '<p class="text-center text-gray-500">Loading comments...</p>';
+            const res = await fetch(`/api/courses/${courseId}/comments`);
+            const data = await res.json();
+            if (data.success) {
+                container.innerHTML = data.comments.length ? data.comments.map(c => `
+                    <div class="p-3 rounded-lg bg-white border border-gray-200">
+                        <div class="flex justify-between items-center mb-1">
+                            <p class="font-bold text-sm text-dark-blue">${c.full_name}</p>
+                            <p class="text-xs text-gray-400">${new Date(c.created_at).toLocaleString()}</p>
+                        </div>
+                        <p class="text-sm text-gray-700">${c.comment}</p>
+                    </div>
+                `).join('') : '<p class="text-center text-gray-500">No comments yet. Start the discussion!</p>';
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        async function postComment(e) {
+            e.preventDefault();
+            const courseId = document.getElementById('discussion-course-id').value;
+            const commentInput = document.getElementById('comment-input');
+            const comment = commentInput.value;
+
+            await fetch(`/api/courses/${courseId}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ comment }) });
+            commentInput.value = '';
+            await loadComments(courseId);
+        }
+
+        async function logout() {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

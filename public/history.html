@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History | McOKOTH TECHNOLOGIES</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --dark-blue: #0a192f; }
+        body { font-family: 'Inter', sans-serif; }
+        .bg-dark-blue { background-color: var(--dark-blue); }
+        .text-dark-blue { color: var(--dark-blue); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.location.href='/'">
+                    <span class="text-xl md:text-2xl font-bold text-dark-blue tracking-tighter">McOKOTH<span class="text-blue-600">TECHNOLOGIES</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-dark-blue hover:text-blue-600 font-medium transition">Home</a>
+                    <a href="hosting" class="text-dark-blue hover:text-blue-600 font-medium transition">Hosting</a>
+                    <a href="/#contact" class="text-dark-blue hover:text-blue-600 font-medium transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-dark-blue">Transaction History</h1>
+            <a href="hosting" class="text-blue-600 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Back to Dashboard</a>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-6">
+            <input type="text" id="search-input" onkeyup="filterHistory()" placeholder="Search by plan, amount, status, or date..." class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Plan</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">Loading transactions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allTransactions = [];
+
+        document.addEventListener('DOMContentLoaded', loadHistory);
+
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/transactions');
+                const data = await res.json();
+
+                if (data.success) {
+                    allTransactions = data.transactions;
+                    renderHistory(allTransactions);
+                } else {
+                    alert('Please login to view history.');
+                    window.location.href = 'hosting';
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('history-table').innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-red-500">Failed to load history.</td></tr>';
+            }
+        }
+
+        function renderHistory(transactions) {
+            const tbody = document.getElementById('history-table');
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">No matching transactions found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = transactions.map(t => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        ${new Date(t.created_at).toLocaleDateString()} <span class="text-gray-400 text-xs">${new Date(t.created_at).toLocaleTimeString()}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-dark-blue">
+                        ${t.plan_name}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        KES ${parseFloat(t.amount).toLocaleString()}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${t.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                            ${t.status.toUpperCase()}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterHistory() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const filteredTransactions = allTransactions.filter(t => {
+                const date = new Date(t.created_at).toLocaleDateString().toLowerCase();
+                const plan = t.plan_name.toLowerCase();
+                const amount = parseFloat(t.amount).toString();
+                const status = t.status.toLowerCase();
+
+                return date.includes(searchTerm) ||
+                       plan.includes(searchTerm) ||
+                       amount.includes(searchTerm) ||
+                       status.includes(searchTerm);
+            });
+            renderHistory(filteredTransactions);
+        }
+    </script>
+</body>
+</html>

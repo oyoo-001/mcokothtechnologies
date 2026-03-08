@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Hosting | McOKOTH TECHNOLOGIES</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-blue: #0a192f;
+            --brand-blue: #112240;
+            --accent-blue: #0077ff;
+        }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .bg-dark-blue { background-color: var(--dark-blue); }
+        .text-dark-blue { color: var(--dark-blue); }
+        .hero-gradient { background: linear-gradient(135deg, #0a192f 0%, #112240 100%); }
+        .price-card:hover { transform: translateY(-10px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.location.href='/'">
+                    <span class="text-xl md:text-2xl font-bold text-dark-blue tracking-tighter">McOKOTH<span class="text-blue-600">TECHNOLOGIES</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-dark-blue hover:text-blue-600 font-medium transition">Home</a>
+                    <a href="/#services" class="text-dark-blue hover:text-blue-600 font-medium transition">Services</a>
+                    <a href="intern" class="text-dark-blue hover:text-blue-600 font-medium transition">Internships</a>
+                    <a href="/#contact" class="text-dark-blue hover:text-blue-600 font-medium transition">Contact</a>
+                    <button id="client-login-btn" onclick="toggleAuthModal('login')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Client Area</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Reliable Web Hosting in Murang'a</h1>
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Fast, secure, and affordable hosting solutions for businesses and individuals. 99.9% Uptime guaranteed.</p>
+            <a href="#pricing" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition">View Packages</a>
+        </div>
+    </section>
+
+    <!-- Client Dashboard (Hidden by default) -->
+    <section id="client-dashboard" class="py-12 bg-gray-100 hidden">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-dark-blue">Client Dashboard</h2>
+                <a href="history" class="text-blue-600 hover:underline font-medium mr-4">Transaction History</a>
+                <button onclick="logout()" class="text-red-600 font-medium hover:underline">Logout</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Console Card -->
+                <div class="bg-dark-blue text-white p-6 rounded-2xl shadow-lg">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-bold text-xl">Server Console</h3>
+                        <i class="fas fa-terminal text-green-400"></i>
+                    </div>
+                    <div class="font-mono text-sm bg-black/30 p-3 rounded mb-4 h-32 overflow-y-auto text-green-400">
+                        > system_check... OK<br>> uptime: 99.9%<br>> connecting to 192.168.1.105...
+                    </div>
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg transition">Access Terminal</button>
+                </div>
+
+                <!-- Deployments -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <h3 class="font-bold text-xl text-dark-blue mb-4"><i class="fas fa-rocket text-blue-600 mr-2"></i>Deployments</h3>
+                    <div id="deployment-list" class="space-y-3">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Domains -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <h3 class="font-bold text-xl text-dark-blue mb-4"><i class="fas fa-globe text-indigo-600 mr-2"></i>My Domains</h3>
+                    <div id="domain-list" class="space-y-3">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tachometer-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Blazing Fast Speed</h3>
+                    <p class="text-gray-600">NVMe SSD storage ensures your website loads instantly for visitors.</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Free SSL Security</h3>
+                    <p class="text-gray-600">Keep your data safe and boost SEO with free SSL certificates included.</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">24/7 Local Support</h3>
+                    <p class="text-gray-600">Our team in Murang'a is always ready to help you resolve any issues.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-dark-blue mb-12">Choose Your Plan</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Starter Plan -->
+                <div class="price-card bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-500 uppercase tracking-wide">Starter</h3>
+                    <div class="my-4">
+                        <span class="text-4xl font-extrabold text-dark-blue">KES 3,000</span><span class="text-gray-500">/year</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">Perfect for personal blogs and portfolios.</p>
+                    <ul class="space-y-3 mb-8 text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 5GB NVMe Storage</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 5 Professional Emails</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Free SSL Certificate</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 1 Website</li>
+                    </ul>
+                    <button onclick="selectPlan('Starter', 3000)" class="w-full py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition">Choose Starter</button>
+                </div>
+
+                <!-- Business Plan -->
+                <div class="price-card bg-white rounded-2xl shadow-xl p-8 border-2 border-blue-600 relative transform md:-translate-y-4">
+                    <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">POPULAR</div>
+                    <h3 class="text-xl font-bold text-blue-600 uppercase tracking-wide">Business</h3>
+                    <div class="my-4">
+                        <span class="text-4xl font-extrabold text-dark-blue">KES 6,000</span><span class="text-gray-500">/year</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">Great for small businesses and dynamic sites.</p>
+                    <ul class="space-y-3 mb-8 text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 20GB NVMe Storage</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Unlimited Emails</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Free .CO.KE Domain</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 5 Websites</li>
+                    </ul>
+                    <button onclick="selectPlan('Business', 6000)" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg">Choose Business</button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="price-card bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-500 uppercase tracking-wide">Enterprise</h3>
+                    <div class="my-4">
+                        <span class="text-4xl font-extrabold text-dark-blue">KES 10,000</span><span class="text-gray-500">/year</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">For high-traffic sites and e-commerce.</p>
+                    <ul class="space-y-3 mb-8 text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Unlimited Storage</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Unlimited Emails</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Free Domain & Backups</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Priority Support</li>
+                    </ul>
+                    <button onclick="selectPlan('Enterprise', 10000)" class="w-full py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition">Choose Enterprise</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark-blue text-white py-12 text-center">
+        <p>&copy; 2026 McOKOTH TECHNOLOGIES. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative">
+            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            
+            <!-- Login Form -->
+            <div id="login-form">
+                <h2 class="text-2xl font-bold text-dark-blue mb-6 text-center">Client Login</h2>
+                <form onsubmit="handleAuth(event, 'login')">
+                    <input type="email" id="login-email" placeholder="Email" class="w-full p-3 mb-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <input type="password" id="login-password" placeholder="Password" class="w-full p-3 mb-6 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <div class="text-right mb-4 -mt-4">
+                        <button type="button" onclick="switchAuthMode('forgot')" class="text-sm text-blue-600 hover:underline">Forgot Password?</button>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Login</button>
+                </form>
+                <p class="mt-4 text-center text-sm">New here? <button onclick="switchAuthMode('signup')" class="text-blue-600 font-bold">Create Account</button></p>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signup-form" class="hidden">
+                <h2 class="text-2xl font-bold text-dark-blue mb-6 text-center">Create Account</h2>
+                <form onsubmit="handleAuth(event, 'signup')">
+                    <input type="text" id="signup-name" placeholder="Full Name" class="w-full p-3 mb-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <input type="email" id="signup-email" placeholder="Email" class="w-full p-3 mb-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <input type="password" id="signup-password" placeholder="Password" class="w-full p-3 mb-6 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition">Sign Up</button>
+                </form>
+                <p class="mt-4 text-center text-sm">Already have an account? <button onclick="switchAuthMode('login')" class="text-blue-600 font-bold">Login</button></p>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div id="forgot-form" class="hidden">
+                <h2 class="text-2xl font-bold text-dark-blue mb-6 text-center">Reset Password</h2>
+                <form onsubmit="handleForgotPassword(event)">
+                    <input type="email" id="forgot-email" placeholder="Enter your email" class="w-full p-3 mb-6 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Send Reset Link</button>
+                </form>
+                <p class="mt-4 text-center text-sm"><button onclick="switchAuthMode('login')" class="text-gray-500 hover:text-gray-700">Back to Login</button></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', checkSession);
+        
+        // Check for payment status in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('payment');
+        if (paymentStatus === 'success') {
+            alert('Payment successful! Your subscription has been upgraded.');
+            window.history.replaceState({}, document.title, window.location.pathname); // Clean URL
+        } else if (paymentStatus === 'failed' || paymentStatus === 'error') {
+            alert('Payment failed. Please try again.');
+        }
+
+        function toggleAuthModal(mode = 'login') {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.toggle('hidden');
+            if(!modal.classList.contains('hidden')) switchAuthMode(mode);
+        }
+
+        function switchAuthMode(mode) {
+            document.getElementById('login-form').classList.toggle('hidden', mode !== 'login');
+            document.getElementById('signup-form').classList.toggle('hidden', mode !== 'signup');
+            document.getElementById('forgot-form').classList.toggle('hidden', mode !== 'forgot');
+        }
+
+        async function handleAuth(e, type) {
+            e.preventDefault();
+            const endpoint = type === 'login' ? '/api/login' : '/api/signup';
+            const body = type === 'login' 
+                ? { email: document.getElementById('login-email').value, password: document.getElementById('login-password').value }
+                : { fullName: document.getElementById('signup-name').value, email: document.getElementById('signup-email').value, password: document.getElementById('signup-password').value };
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    if (type === 'signup') {
+                        alert('Account created! Please login.');
+                        switchAuthMode('login');
+                    } else {
+                        toggleAuthModal();
+                        checkSession();
+                    }
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) { console.error(err); alert('Authentication failed'); }
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/forgot-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+                const data = await res.json();
+                alert(data.message);
+            } catch (err) { alert('Failed to send request'); }
+            finally { btn.innerText = originalText; btn.disabled = false; }
+        }
+
+        async function checkSession() {
+            const res = await fetch('/api/check-session');
+            const data = await res.json();
+            const dashboard = document.getElementById('client-dashboard');
+            const btn = document.getElementById('client-login-btn');
+
+            if (data.loggedIn && (data.user.role === 'user' || data.user.role === 'admin')) {
+                dashboard.classList.remove('hidden');
+                btn.innerText = 'My Dashboard';
+                btn.onclick = () => document.getElementById('client-dashboard').scrollIntoView({behavior: 'smooth'});
+                loadDashboardData();
+            } else {
+                dashboard.classList.add('hidden');
+                btn.innerText = 'Client Area';
+                btn.onclick = () => toggleAuthModal('login');
+            }
+        }
+
+        async function loadDashboardData() {
+            const res = await fetch('/api/hosting-services');
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('deployment-list').innerHTML = data.services.map(s => s.status ? `<div class="flex justify-between p-2 bg-gray-50 rounded border border-gray-100"><span class="font-medium">${s.name}</span><span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">${s.status}</span></div>` : '').join('');
+                document.getElementById('domain-list').innerHTML = (data.services.find(s => s.domains)?.domains || []).map(d => `<div class="flex justify-between p-2 bg-gray-50 rounded border border-gray-100"><span class="font-medium">${d}</span><a href="#" class="text-blue-600 text-sm">Manage</a></div>`).join('');
+            }
+        }
+
+        async function logout() { await fetch('/api/logout', { method: 'POST' }); window.location.reload(); }
+
+        async function selectPlan(plan, amount) {
+            const btn = document.getElementById('client-login-btn');
+            if (btn.innerText === 'Client Area') {
+                alert('Please login to subscribe to a plan.');
+                toggleAuthModal('login');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/paystack/initialize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plan, amount })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = data.authorization_url;
+                } else {
+                    alert('Failed to initialize payment: ' + data.message);
+                }
+            } catch (error) {
+                alert('An error occurred while processing your request.');
+            }
+        }
+    </script>
+</body>
+</html>
