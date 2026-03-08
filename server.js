@@ -39,11 +39,18 @@ app.use(session({
 }));
 // Nodemailer Transporter Setup
 const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
+    host: 'smtp.gmail.com', // Replace with your provider's SMTP host
+    port: 443, // Try port 443 or 587 if 465 is blocked by Render's outbound rules
+    secure: false, // Set to true only for port 465
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
+    tls: {
+        // This helps if Render's network has trouble verifying the SSL certificate
+        rejectUnauthorized: false,
+        minVersion: 'TLSv1.2'
+    }
 });
 
 // Verify transporter configuration
