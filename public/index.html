@@ -501,8 +501,12 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
         // SPA Section Toggling
+        let socket = null; // Global socket variable
+        let currentRequestId = null; // Store the database ID of the chat
+        const notificationSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3');
         function showSection(sectionId) {
             // Hide all sections
             const sections = document.querySelectorAll('.content-section');
@@ -589,15 +593,17 @@
             }
         }
 
-        function handleChat(e) {
+        function handleChat(e, messageOverride = null) {
             e.preventDefault();
             const input = document.getElementById('chat-input');
-            const message = input.value.trim();
+            const message = messageOverride || input.value.trim();
             if (!message) return;
 
             // Add User Message
             addMessage(message, 'user');
-            input.value = '';
+            if (!messageOverride) {
+                input.value = '';
+            }
 
             // Simulate thinking
             const typingIndicator = addTypingIndicator();
@@ -644,7 +650,15 @@
         function getBotResponse(input) {
             const lowerInput = input.toLowerCase();
             
-            if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')) {
+            if (lowerInput.includes('live chat') || lowerInput.includes('talk to admin') || lowerInput.includes('human') || lowerInput.includes('support')) {
+                return `To connect you with a support agent for a live chat, please provide your details below.
+                        <form onsubmit="startLiveChat(event, '${input.replace(/'/g, "\\'")}')" class="mt-2">
+                            <input type="text" id="livechat-name" placeholder="Your Name" class="w-full p-2 border border-gray-300 rounded-lg text-sm mb-2 focus:outline-none focus:border-blue-500" required>
+                            <input type="email" id="livechat-email" placeholder="Your Email" class="w-full p-2 border border-gray-300 rounded-lg text-sm mb-2 focus:outline-none focus:border-blue-500" required>
+                            <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm w-full hover:bg-blue-600 transition">Request Live Chat</button>
+                        </form>`;
+            }
+            if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')|| lowerInput.includes('yo') || lowerInput.includes('greetings')|| lowerInput.includes('welcome')) {
                 return "Hello! Welcome to McOKOTH TECHNOLOGIES. How can I help you today?";
             }
             if (lowerInput.includes('about') || lowerInput.includes('company') || lowerInput.includes('who are you')) {
@@ -653,28 +667,99 @@
             if (lowerInput.includes('service') || lowerInput.includes('offer') || lowerInput.includes('do')) {
                 return "We offer AI Assistants, Electronics Repair, Intern Training, Web Hosting, Software Solutions, and Networking.";
             }
-            if (lowerInput.includes('location') || lowerInput.includes('where')) {
+            if (lowerInput.includes('location') || lowerInput.includes('where') || lowerInput.includes('address')) {
                 return "We are located in Murang'a Town, near Rubis Fuel Station.";
             }
             if (lowerInput.includes('contact') || lowerInput.includes('phone') || lowerInput.includes('email')) {
                 return "You can reach us at 0742041208 or email oyoookoth42@gmail.com.";
             }
-            
-            return "I'm not sure about that. Would you like to request help from a human support agent? They will contact you via email. <br><br><button onclick=\"requestHumanSupport('${input}')\" class='bg-blue-500 text-white px-3 py-1 rounded-lg text-sm'>Yes, request support</button>";
-        }
-
-        async function requestHumanSupport(message) {
-            const email = prompt("Please enter your email address so our team can contact you:");
-            if (!email) {
-                addMessage("Support request cancelled.", 'bot');
-                return;
+            if (lowerInput.includes('repair') || lowerInput.includes('electronics')) {
+                return "Our repair center is located near Rubis Fuel Station in Murang'a Town. We offer 24/7 technician support for laptops, phones, and industrial electrical equipment.";
             }
-            addMessage("Submitting your request...", 'bot');
-            const res = await fetch('/api/request-support', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, message }) });
-            const data = await res.json();
-            addMessage(data.message, 'bot');
+            if (lowerInput.includes('intern') || lowerInput.includes('training')) {
+                return "We provide hands-on industrial training and internships for tech students. Contact us to learn more about our programs.";
+            }
+            if (lowerInput.includes('software')) {
+                return "Our software solutions include custom ERPs, mobile apps, and inventory systems tailored to your business needs.";
+            }
+            if (lowerInput.includes('hosting')) {
+                return "We offer scalable cloud hosting solutions with daily backups and localized Murang'a server support.";
+            }   
+            if (lowerInput.includes('ai') || lowerInput.includes('assistant')) {
+                return "Our AI Assistants are custom-built to automate your customer service and business operations. Contact us for a consultation!";
+            }   
+            if (lowerInput.includes('networking')) {
+                return "We provide professional LAN/WAN setup and specialized internet services for institutions and homes. Contact us for more details.";
+            }   
+            
+            return `I'm not sure how to help with that. If you'd like to talk to a human, you can start a live chat.
+                        <br><br><button onclick="handleChat({preventDefault: () => {}}, 'live chat')" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm">Start Live Chat</button>`;
         }
 
+        function startLiveChat(event, originalMessage) {
+            event.preventDefault();
+            const form = event.target;
+            const name = form.querySelector('#livechat-name').value;
+            const email = form.querySelector('#livechat-email').value;
+
+            form.querySelector('button').disabled = true;
+            form.querySelector('button').innerText = 'Connecting...';
+
+            if (!socket || !socket.connected) {
+                socket = io();
+
+                socket.on('connect', () => {
+                    console.log('Connected to server with ID:', socket.id);
+                    socket.emit('user:request_chat', { name, email, message: originalMessage });
+                });
+
+                socket.on('user:request_received', (data) => {
+                    addMessage(data.message, 'bot');
+                    currentRequestId = data.requestId; // Save ID
+                    enableLiveChatInput();
+                });
+
+                socket.on('system:admin_joined', (data) => {
+                    addMessage(data.message, 'bot');
+                    notificationSound.play().catch(e => console.warn('Sound blocked:', e));
+                });
+
+                socket.on('chat:message', (data) => {
+                    if (data.sender === 'admin') {
+                        addMessage(data.message, 'bot');
+                        notificationSound.play().catch(e => console.warn('Sound blocked:', e));
+                    }
+                });
+
+                socket.on('disconnect', () => {
+                    addMessage('You have been disconnected from the chat.', 'bot');
+                });
+
+            } else {
+                socket.emit('user:request_chat', { name, email, message: originalMessage });
+            }
+        }
+
+        function enableLiveChatInput() {
+            const chatInputContainer = document.querySelector('#chat-modal .p-3.border-t');
+            chatInputContainer.innerHTML = `
+                <form onsubmit="sendChatMessage(event)" class="flex gap-2">
+                    <input id="live-chat-input" type="text" placeholder="Type your message..." class="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500" autocomplete="off" required>
+                    <button type="submit" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            `;
+        }
+
+        function sendChatMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('live-chat-input');
+            const message = input.value.trim();
+            if (!message || !socket) return;
+
+            addMessage(message, 'user');
+            socket.emit('chat:message', { to: socket.id, message: message, sender: 'user', requestId: currentRequestId });
+            input.value = '';
+        }
         // API Communication
         async function submitContactForm(event) {
             event.preventDefault();
@@ -722,141 +807,6 @@
             }
         }
   
-
-        function handleChat(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-            if (!message) return;
-
-            // Add User Message
-            addMessage(message, 'user');
-            input.value = '';
-
-            // Simulate thinking
-            const typingIndicator = addTypingIndicator();
-            
-            setTimeout(() => {
-                removeTypingIndicator(typingIndicator);
-                const response = getBotResponse(message);
-                addMessage(response, 'bot');
-            }, 800);
-        }
-
-        function addMessage(text, sender) {
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            const isBot = sender === 'bot';
-            
-            div.className = isBot 
-                ? 'self-start bg-white border border-gray-200 rounded-lg p-3 max-w-[85%] shadow-sm' 
-                : 'self-end bg-blue-600 text-white rounded-lg p-3 max-w-[85%] shadow-sm';
-                
-            div.innerHTML = `<p class="text-sm ${isBot ? 'text-gray-700' : 'text-white'}">${text}</p>`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function addTypingIndicator() {
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            div.className = 'self-start bg-white border border-gray-200 rounded-lg p-3 max-w-[85%] shadow-sm typing-indicator';
-            div.innerHTML = '<div class="flex gap-1"><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div><div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div></div>';
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            return div;
-        }
-
-        function removeTypingIndicator(element) {
-            if(element) element.remove();
-        }
-
-        function getBotResponse(input) {
-            const lowerInput = input.toLowerCase();
-            
-            if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')|| lowerInput.includes('yo') || lowerInput.includes('greetings')|| lowerInput.includes('welcome')) {
-                return "Hello! Welcome to McOKOTH TECHNOLOGIES. How can I help you today?";
-            }
-            if (lowerInput.includes('about') || lowerInput.includes('company') || lowerInput.includes('who are you')) {
-                return "We are McOKOTH TECHNOLOGIES, a leading tech solution provider in Murang'a Town, offering hosting, software development, and electronics repair.";
-            }
-            if (lowerInput.includes('service') || lowerInput.includes('offer') || lowerInput.includes('do')) {
-                return "We offer AI Assistants, Electronics Repair, Intern Training, Web Hosting, Software Solutions, and Networking.";
-            }
-            if (lowerInput.includes('location') || lowerInput.includes('where') || lowerInput.includes('address')) {
-                return "We are located in Murang'a Town, near Rubis Fuel Station.";
-            }
-            if (lowerInput.includes('contact') || lowerInput.includes('phone') || lowerInput.includes('email')) {
-                return "You can reach us at 0742041208 or email oyoookoth42@gmail.com.";
-            }
-            if (lowerInput.includes('repair') || lowerInput.includes('electronics')) {
-                return "Our repair center is located near Rubis Fuel Station in Murang'a Town. We offer 24/7 technician support for laptops, phones, and industrial electrical equipment.";
-            }
-            if (lowerInput.includes('intern') || lowerInput.includes('training')) {
-                return "We provide hands-on industrial training and internships for tech students. Contact us to learn more about our programs.";
-            }
-            if (lowerInput.includes('software')) {
-                return "Our software solutions include custom ERPs, mobile apps, and inventory systems tailored to your business needs.";
-            }
-            if (lowerInput.includes('hosting')) {
-                return "We offer scalable cloud hosting solutions with daily backups and localized Murang'a server support.";
-            }   
-            if (lowerInput.includes('ai') || lowerInput.includes('assistant')) {
-                return "Our AI Assistants are custom-built to automate your customer service and business operations. Contact us for a consultation!";
-            }   
-            if (lowerInput.includes('networking')) {
-                return "We provide professional LAN/WAN setup and specialized internet services for institutions and homes. Contact us for more details.";
-            }   
-            return "I'm not sure about that. Please contact our support team at 0742041208 or try asking about our services.";
-        }
-
-        // API Communication
-        async function submitContactForm(event) {
-            event.preventDefault();
-            
-            const form = event.target;
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerText;
-            
-            // UI Feedback: Loading
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
-            submitBtn.disabled = true;
-
-            const formData = {
-                name: document.getElementById('contact-name').value,
-                email: document.getElementById('contact-email').value,
-                service: document.getElementById('contact-service').value,
-                message: document.getElementById('contact-message').value
-            };
-
-            try {
-                // Sending data to the backend server
-                const response = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showToast(result.message, 'success');
-                    form.reset();
-                } else {
-                    showToast(result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Failed to connect to the server.', 'error');
-            } finally {
-                // Restore button
-                submitBtn.innerText = originalBtnText;
-                submitBtn.disabled = false;
-            }
-        }
-
         async function submitInternForm(event) {
             event.preventDefault();
             

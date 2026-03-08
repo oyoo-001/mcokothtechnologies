@@ -10,6 +10,10 @@ const https = require('https');
 const PDFDocument = require('pdfkit');
 require('dotenv').config();
 
+// Socket.io setup
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
 // 1. Initialize the MySQLStore constructor
 const MySQLStore = require('express-mysql-session')(session);
 
@@ -17,6 +21,8 @@ const MySQLStore = require('express-mysql-session')(session);
 const sessionStore = new MySQLStore({}, db);
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, { /* options */ });
 const PORT = process.env.PORT || 3000;
 
 // 3. Middleware
@@ -40,7 +46,7 @@ app.use(session({
 // Nodemailer Transporter Setup
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com', // Replace with your provider's SMTP host
-    port: 443, // Try port 443 or 587 if 465 is blocked by Render's outbound rules
+    port: 587, // Try port 443 or 587 if 465 is blocked by Render's outbound rules
     secure: false, // Set to true only for port 465
     auth: {
         user: process.env.EMAIL_USER,
@@ -62,6 +68,17 @@ transporter.verify((error, success) => {
         console.log('Server is ready to take our messages');
     }
 });
+
+// Ensure chat_messages table exists
+db.execute(`
+    CREATE TABLE IF NOT EXISTS chat_messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        request_id INT NOT NULL,
+        sender ENUM('user', 'admin', 'system') NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`).catch(err => console.error('Error creating chat_messages table:', err));
 
 // Helper function for professional email styling
 const getEmailTemplate = (title, content) => `
@@ -564,6 +581,48 @@ app.post('/api/admin/users/:id/status', ensureAdmin, async (req, res) => {
     }
 });
 
+// Resolve (delete) a support request
+app.delete('/api/admin/support/:id', ensureAdmin, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [result] = await db.execute('DELETE FROM support_requests WHERE id = ?', [id]);
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Support request resolved and removed.' });
+        } else {
+            res.status(404).json({ success: false, message: 'Support request not found.' });
+        }
+    } catch (error) {
+        console.error('Resolve support request error:', error);
+        res.status(500).json({ success: false, message: 'Error resolving support request.' });
+    }
+});
+
+// Create Intern User (by Admin)
+app.post('/api/admin/create-intern', ensureAdmin, async (req, res) => {
+    const { fullName, email, password } = req.body;
+
+    if (!fullName || !email || !password) {
+        return res.status(400).json({ success: false, message: 'Full name, email, and password are required.' });
+    }
+
+    try {
+        // Check if user already exists
+        const [exists] = await db.execute('SELECT id FROM users WHERE email = ?', [email]);
+        if (exists.length > 0) {
+            return res.status(400).json({ success: false, message: 'An account with this email already exists.' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // Create user with 'intern' role
+        await db.execute('INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, ?)', [fullName, email, hashedPassword, 'intern']);
+
+        res.status(201).json({ success: true, message: 'Intern account created successfully.' });
+    } catch (error) {
+        console.error('Admin create intern error:', error);
+        res.status(500).json({ success: false, message: 'Failed to create intern account.' });
+    }
+});
+
 // Add Course
 app.post('/api/admin/courses', ensureAdmin, async (req, res) => {
     const { title, description, videoUrl } = req.body;
@@ -654,19 +713,6 @@ app.post('/api/admin/approve-intern', ensureAdmin, async (req, res) => {
     }
 });
 
-// API endpoint for Bot Handoff
-app.post('/api/request-support', async (req, res) => {
-    const { email, message } = req.body;
-    try {
-        await db.execute('INSERT INTO support_requests (requester_email, initial_message) VALUES (?, ?)', [email, message]);
-        await db.execute('INSERT INTO notifications (message, type) VALUES (?, ?)', [`New support request from ${email}`, 'support']);
-        res.json({ success: true, message: 'Support request sent. A human will contact you via email shortly.' });
-    } catch (error) {
-        console.error('Support request error:', error);
-        res.status(500).json({ success: false, message: 'Failed to send support request.' });
-    }
-});
-
 // API endpoint for Internship form
 app.post('/api/internship', async (req, res) => {
     const { name, email, phone, expertise } = req.body;
@@ -678,6 +724,11 @@ app.post('/api/internship', async (req, res) => {
     try {
         // Save to database
         await db.execute('INSERT INTO internship_applications (name, email, phone, expertise) VALUES (?, ?, ?, ?)', [name, email, phone, expertise]);
+
+        // Also log to contact submissions for admin visibility
+        const contactMessage = `Internship Application:\nExpertise: ${expertise}\nPhone: ${phone}`;
+        await db.execute('INSERT INTO contact_submissions (name, email, service, message) VALUES (?, ?, ?, ?)', [name, email, 'Internship Application', contactMessage]);
+
         await db.execute('INSERT INTO notifications (message, type) VALUES (?, ?)', [`New internship application: ${name}`, 'application']);
 
     } catch (dbError) {
@@ -856,6 +907,88 @@ app.get('/ping', (req, res) => {
         timestamp: Date.now()
     });
 });
-app.listen(PORT, () => {
+
+// --- SOCKET.IO LOGIC ---
+io.on('connection', (socket) => {
+    console.log(`Socket connected: ${socket.id}`);
+
+    // Admin identifies themselves and joins the 'admins' room
+    socket.on('admin:join', () => {
+        console.log(`Admin joined: ${socket.id}`);
+        socket.join('admins');
+    });
+
+    // User requests a chat after filling the form
+    socket.on('user:request_chat', async (data) => {
+        const { name, email, message } = data;
+        console.log(`Chat request from ${name} (${email})`);
+
+        let requestId;
+        // Store chat request in DB for persistence
+        try {
+            const fullMessage = `Live Chat Request from: ${name}\n\nOriginal query: ${message}`;
+            const notificationMessage = `New live chat request from ${name} (${email})`;
+            
+            const [result] = await db.execute('INSERT INTO support_requests (requester_email, initial_message, status) VALUES (?, ?, ?)', [email, fullMessage, 'pending']);
+            requestId = result.insertId;
+            await db.execute('INSERT INTO notifications (message, type) VALUES (?, ?)', [notificationMessage, 'support']);
+        } catch (error) {
+            console.error('Failed to save support request to DB:', error);
+            socket.emit('system:error', { message: 'Could not process your request at this time.' });
+            return;
+        }
+
+        // Notify all admins of the new request
+        io.to('admins').emit('admin:new_request', {
+            socketId: socket.id,
+            name,
+            email,
+            message,
+            timestamp: new Date(),
+            requestId // Send the DB ID to the admin
+        });
+
+        // Confirm to user that request is sent
+        socket.emit('user:request_received', { 
+            message: 'Thank you! An agent has been notified and will join the chat shortly.',
+            requestId // Send the DB ID back to the user
+        });
+    });
+
+    // Admin accepts a chat and joins the user's room
+    socket.on('admin:join_chat', async (data) => {
+        const { socketId, requestId } = data;
+        console.log(`Admin ${socket.id} is joining chat with ${socketId}`);
+        socket.join(socketId); // Admin joins room named after user's socket ID
+        socket.to(socketId).emit('system:admin_joined', { message: 'An agent has joined the chat.' });
+
+        // Load history
+        if (requestId) {
+            try {
+                const [history] = await db.execute('SELECT * FROM chat_messages WHERE request_id = ? ORDER BY created_at ASC', [requestId]);
+                socket.emit('chat:history', { history });
+            } catch (err) { console.error('Error fetching chat history:', err); }
+        }
+    });
+
+    // A message is sent (from either user or admin)
+    socket.on('chat:message', async (data) => {
+        const { to, message, sender, requestId } = data;
+        
+        if (requestId) {
+            await db.execute('INSERT INTO chat_messages (request_id, sender, message) VALUES (?, ?, ?)', [requestId, sender, message]).catch(e => console.error(e));
+        }
+
+        const messageData = { sender, message, timestamp: new Date() };
+        io.to(to).emit('chat:message', messageData);
+    });
+
+    socket.on('disconnect', () => {
+        io.to('admins').emit('admin:user_disconnected', { socketId: socket.id });
+        console.log(`Socket disconnected: ${socket.id}`);
+    });
+});
+
+httpServer.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
