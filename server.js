@@ -4,26 +4,39 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
-const db = require('./db');
+const db = require('./db'); // Ensure this exports a mysql2 pool
 const crypto = require('crypto');
 const https = require('https');
 const PDFDocument = require('pdfkit');
 require('dotenv').config();
 
+// 1. Initialize the MySQLStore constructor
+const MySQLStore = require('express-mysql-session')(session);
+
+// 2. Create the sessionStore instance using your existing db connection
+const sessionStore = new MySQLStore({}, db);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// 3. Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
+
+// 4. Use the sessionStore in your session configuration
 app.use(session({
+    key: 'mcokoth_session_cookie',
     secret: process.env.SESSION_SECRET || 'mcokoth_secret_key',
+    store: sessionStore, // Correctly references the instance created above
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 3600000 } // 1 hour
+    cookie: { 
+        maxAge: 3600000, // 1 hour
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production' // Only use true if on HTTPS
+    }
 }));
-
 // Nodemailer Transporter Setup
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
