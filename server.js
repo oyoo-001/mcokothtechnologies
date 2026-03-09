@@ -69,6 +69,48 @@ transporter.verify((error, success) => {
     }
 });
 
+// --- AUTOMATED TASKS ---
+
+// Check for expired subscriptions (Runs on startup and every 24 hours)
+const checkExpiredSubscriptions = async () => {
+    try {
+        // Find subscriptions to expire
+        const [subscriptions] = await db.execute(`
+            SELECT s.id, u.email, u.full_name, s.plan_name 
+            FROM hosting_subscriptions s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.status = 'active' 
+            AND created_at < DATE_SUB(NOW(), INTERVAL 1 YEAR)
+        `);
+
+        if (subscriptions.length > 0) {
+            const ids = subscriptions.map(s => s.id);
+            const placeholders = ids.map(() => '?').join(',');
+            
+            // Expire them
+            await db.execute(`UPDATE hosting_subscriptions SET status = 'expired' WHERE id IN (${placeholders})`, ids);
+            console.log(`Expired ${subscriptions.length} subscriptions.`);
+
+            // Send email notifications
+            for (const sub of subscriptions) {
+                const mailOptions = {
+                    from: `"McOKOTH TECHNOLOGIES" <${process.env.EMAIL_USER}>`,
+                    to: sub.email,
+                    subject: 'Subscription Expired',
+                    html: getEmailTemplate('Subscription Expired', `
+                        <p>Hi ${sub.full_name},</p>
+                        <p>Your <strong>${sub.plan_name}</strong> hosting subscription has expired.</p>
+                        <p>To continue using our services, please renew your subscription via your dashboard.</p>
+                    `)
+                };
+                transporter.sendMail(mailOptions).catch(err => console.error(`Failed to send expiry email to ${sub.email}:`, err));
+            }
+        }
+    } catch (e) { console.error('Error checking subscription expiry:', e); }
+};
+checkExpiredSubscriptions();
+setInterval(checkExpiredSubscriptions, 24 * 60 * 60 * 1000);
+
 // Ensure chat_messages table exists
 db.execute(`
     CREATE TABLE IF NOT EXISTS chat_messages (
@@ -451,7 +493,12 @@ app.get('/api/paystack/callback', async (req, res) => {
                     // Activate new subscription
                     await db.execute('INSERT INTO hosting_subscriptions (user_id, plan_name, amount, status) VALUES (?, ?, ?, "active")', [user_id, plan, amount]);
                     
-                    res.redirect('/hosting?payment=success&plan=' + plan);
+                    let redirectUrl = '/hosting?payment=success&plan=' + plan;
+                    if (plan === 'Standard') redirectUrl = '/standard.html';
+                    else if (plan === 'Pro') redirectUrl = '/pro.html';
+                    else if (plan === 'Enterprise') redirectUrl = '/enterprise.html';
+                    
+                    res.redirect(redirectUrl);
                 } catch (dbError) {
                     console.error(dbError);
                     res.redirect('/hosting?payment=error');
@@ -535,6 +582,68 @@ app.get('/api/admin/dashboard', ensureAdmin, async (req, res) => {
     } catch (error) {
         console.error('Admin dashboard error:', error);
         res.status(500).json({ success: false, message: 'Server error fetching admin data.' });
+    }
+});
+
+// Get Hosting Subscribers (Detailed)
+app.get('/api/admin/hosting/subscribers', ensureAdmin, async (req, res) => {
+    try {
+        const [rows] = await db.execute(`
+            SELECT s.id, u.full_name, u.email, s.plan_name, s.status, s.created_at, 
+            DATE_ADD(s.created_at, INTERVAL 1 YEAR) as expires_at
+            FROM hosting_subscriptions s
+            JOIN users u ON s.user_id = u.id
+            ORDER BY s.created_at DESC
+        `);
+        res.json({ success: true, subscribers: rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error fetching subscribers' });
+    }
+});
+
+// Cancel Subscription
+app.post('/api/admin/hosting/cancel', ensureAdmin, async (req, res) => {
+    const { subscriptionId } = req.body;
+    try {
+        // Fetch subscription and user details
+        const [rows] = await db.execute(`
+            SELECT s.plan_name, u.email, u.full_name 
+            FROM hosting_subscriptions s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.id = ?
+        `, [subscriptionId]);
+
+        if (rows.length > 0) {
+            const sub = rows[0];
+            await db.execute('UPDATE hosting_subscriptions SET status = "cancelled" WHERE id = ?', [subscriptionId]);
+            
+            // Send cancellation email
+            const mailOptions = {
+                from: `"McOKOTH TECHNOLOGIES" <${process.env.EMAIL_USER}>`,
+                to: sub.email,
+                subject: 'Subscription Cancelled',
+                html: getEmailTemplate('Subscription Cancelled', `
+                    <p>Hi ${sub.full_name},</p>
+                    <p>Your <strong>${sub.plan_name}</strong> subscription has been cancelled by the administrator.</p>
+                    <p>If you believe this is an error, please contact support.</p>
+                `)
+            };
+            transporter.sendMail(mailOptions).catch(err => console.error(`Failed to send cancellation email to ${sub.email}:`, err));
+            
+            res.json({ success: true, message: 'Subscription cancelled and user notified.' });
+        } else {
+            // Fallback if user not found but subscription exists
+            const [result] = await db.execute('UPDATE hosting_subscriptions SET status = "cancelled" WHERE id = ?', [subscriptionId]);
+            if (result.affectedRows > 0) {
+                res.json({ success: true, message: 'Subscription cancelled (User notification failed - user not found).' });
+            } else {
+                res.status(404).json({ success: false, message: 'Subscription not found.' });
+            }
+        }
+    } catch (error) {
+        console.error('Cancel subscription error:', error);
+        res.status(500).json({ success: false, message: 'Error cancelling subscription' });
     }
 });
 

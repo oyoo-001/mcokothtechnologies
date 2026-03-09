@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Dashboard | McOKOTH TECHNOLOGIES</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --dark-blue: #0a192f; }
+        body { font-family: 'Inter', sans-serif; }
+        .bg-dark-blue { background-color: var(--dark-blue); }
+        .text-dark-blue { color: var(--dark-blue); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <nav class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.location.href='/'">
+                    <span class="text-xl md:text-2xl font-bold text-dark-blue tracking-tighter">McOKOTH<span class="text-blue-600">TECHNOLOGIES</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-dark-blue hover:text-blue-600 font-medium transition">Home</a>
+                    <button onclick="logout()" class="text-red-600 font-medium hover:underline">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="bg-gradient-to-r from-dark-blue to-blue-900 p-8 rounded-2xl shadow-xl text-white mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Enterprise Suite</h1>
+                    <p class="text-blue-200">High-performance infrastructure for mission-critical applications.</p>
+                </div>
+                <div class="bg-white/10 p-3 rounded-lg backdrop-blur-sm">
+                    <span class="font-bold text-green-400">PRIORITY SUPPORT ACTIVE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 text-xs uppercase font-bold mb-2">CPU Usage</div>
+                <div class="text-2xl font-bold text-dark-blue">12%</div>
+                <div class="w-full bg-gray-100 h-1.5 mt-2 rounded-full"><div class="bg-green-500 h-1.5 rounded-full" style="width: 12%"></div></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 text-xs uppercase font-bold mb-2">Memory</div>
+                <div class="text-2xl font-bold text-dark-blue">8.4 GB</div>
+                <div class="w-full bg-gray-100 h-1.5 mt-2 rounded-full"><div class="bg-blue-500 h-1.5 rounded-full" style="width: 45%"></div></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 text-xs uppercase font-bold mb-2">Bandwidth</div>
+                <div class="text-2xl font-bold text-dark-blue">1.2 TB</div>
+                <div class="w-full bg-gray-100 h-1.5 mt-2 rounded-full"><div class="bg-purple-500 h-1.5 rounded-full" style="width: 60%"></div></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
+                <button class="bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition">Manage Dedicated Server</button>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <h3 class="text-xl font-bold text-dark-blue mb-4">Enterprise Backups</h3>
+            <p class="text-gray-600 mb-4">Your data is backed up hourly across 3 geographical locations.</p>
+            <div class="flex gap-4">
+                <button class="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50">View Snapshots</button>
+                <button class="border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50">Restore Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', checkSession);
+        async function checkSession() {
+            const res = await fetch('/api/check-session');
+            const data = await res.json();
+            if (!data.loggedIn) window.location.href = '/hosting';
+        }
+        async function logout() { await fetch('/api/logout', { method: 'POST' }); window.location.href = '/hosting'; }
+    </script>
+</body>
+</html>

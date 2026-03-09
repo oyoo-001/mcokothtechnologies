@@ -256,17 +256,45 @@
 
             <!-- Hosting Pane -->
             <div id="hosting-pane" class="content-pane">
+                <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h2 class="text-xl font-semibold mb-4">Hosting Overview</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <h3 class="font-bold text-blue-800">Standard</h3>
+                            <p class="text-2xl font-bold text-blue-600" id="count-standard">0</p>
+                        </div>
+                        <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+                            <h3 class="font-bold text-indigo-800">Pro</h3>
+                            <p class="text-2xl font-bold text-indigo-600" id="count-pro">0</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                            <h3 class="font-bold text-purple-800">Enterprise</h3>
+                            <p class="text-2xl font-bold text-purple-600" id="count-enterprise">0</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <h2 class="text-xl font-semibold mb-4">Hosting Subscriptions</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Subscriber Management</h2>
+                        <div class="flex gap-2">
+                            <button onclick="filterHosting('all')" class="px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300">All</button>
+                            <button onclick="filterHosting('active')" class="px-3 py-1 text-sm rounded bg-green-100 text-green-800 hover:bg-green-200">Active</button>
+                            <button onclick="filterHosting('expired')" class="px-3 py-1 text-sm rounded bg-red-100 text-red-800 hover:bg-red-200">Expired</button>
+                        </div>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Plan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subscribers</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expires</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="hosting-table" class="bg-white divide-y divide-gray-200"></tbody>
+                            <tbody id="hosting-subscribers-table" class="bg-white divide-y divide-gray-200"></tbody>
                         </table>
                     </div>
                 </div>
@@ -344,6 +372,7 @@
         let adminSocket = null;
         let activeChatSocketId = null;
         let activeChatRequestId = null;
+        let allSubscribers = []; // Store for filtering
         const notificationSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8a73467.mp3');
 
         document.addEventListener('DOMContentLoaded', checkAdminSession);
@@ -356,6 +385,8 @@
             
             if (paneId === 'courses') {
                 loadManageContent();
+            } else if (paneId === 'hosting') {
+                loadHostingSubscribers();
             }
         }
 
@@ -430,15 +461,16 @@
                 document.getElementById('stat-hosts').innerText = data.stats.hostingClients;
                 document.getElementById('stat-interns').innerText = data.stats.interns;
 
-                // Populate Hosting Table
-                const hostingTable = document.getElementById('hosting-table');
-                hostingTable.innerHTML = data.stats.hostingBreakdown.map(h => `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap font-medium">${h.plan_name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${h.count}</td>
-                    </tr>
-                `).join('');
-                if(data.stats.hostingBreakdown.length === 0) hostingTable.innerHTML = '<tr><td colspan="2" class="px-6 py-4 text-center text-gray-500">No active subscriptions</td></tr>';
+                // Populate Hosting Stats Cards
+                const breakdown = data.stats.hostingBreakdown;
+                const getCount = (plan) => breakdown.find(b => b.plan_name === plan)?.count || 0;
+                
+                const stdCount = document.getElementById('count-standard');
+                if(stdCount) stdCount.innerText = getCount('Standard');
+                const proCount = document.getElementById('count-pro');
+                if(proCount) proCount.innerText = getCount('Pro');
+                const entCount = document.getElementById('count-enterprise');
+                if(entCount) entCount.innerText = getCount('Enterprise');
 
                 // Populate Applications
                 const appTable = document.getElementById('applications-table');
@@ -552,6 +584,55 @@
                     `).join('');
                 }
             } catch(e) {}
+        }
+
+        async function loadHostingSubscribers() {
+            try {
+                const res = await fetch('/api/admin/hosting/subscribers');
+                const data = await res.json();
+                if (data.success) {
+                    allSubscribers = data.subscribers;
+                    renderHostingTable(allSubscribers);
+                }
+            } catch (e) { showToast('Failed to load subscribers', 'error'); }
+        }
+
+        function renderHostingTable(subscribers) {
+            const table = document.getElementById('hosting-subscribers-table');
+            if (subscribers.length === 0) {
+                table.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No subscribers found</td></tr>';
+                return;
+            }
+            table.innerHTML = subscribers.map(s => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${s.full_name}</div>
+                        <div class="text-xs text-gray-500">${s.email}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap"><span class="font-bold text-dark-blue">${s.plan_name}</span></td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${s.status === 'active' ? 'bg-green-100 text-green-800' : (s.status === 'expired' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')}">
+                            ${s.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(s.expires_at).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        ${s.status === 'active' ? `<button onclick="cancelSubscription(${s.id})" class="text-red-600 hover:text-red-900">Cancel</button>` : '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterHosting(status) {
+            if (status === 'all') renderHostingTable(allSubscribers);
+            else renderHostingTable(allSubscribers.filter(s => s.status === status));
+        }
+
+        async function cancelSubscription(id) {
+            if (!await confirmAction('Cancel Subscription', 'Are you sure? This will immediately stop the service.')) return;
+            await fetch('/api/admin/hosting/cancel', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ subscriptionId: id }) });
+            loadHostingSubscribers();
+            loadDashboardData(); // Refresh stats
         }
 
         async function deleteContent(type, id) {
